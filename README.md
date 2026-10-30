@@ -2,12 +2,15 @@
 
 A locally reproducible batch pipeline integrates the **three supplied CSV snapshots** for 24 Jharkhand Census districts. Spark performs cleaning, joins, feature engineering and explainable outreach ranking. A single Python driver writes validated district outputs to SQLite in one transaction.
 
-## Start here
+## Important files
 
 - `PROJECT_ANALYSIS_AND_FUTURE_IMPROVEMENTS.md`: findings, engineering decisions, actual issues and roadmap.
 - `docs/verification.md`: actual test/run evidence and execution limits.
 - `docs/schema_documentation.md` and `sql/schema.sql`: complete column definitions and constraints.
 - `docs/source_column_profile.csv`: every original source column, inferred type, blanks and sample.
+- `outputs/mart_district_pension_outreach.csv`: TARGET FILE
+- `outputs/ml_district_features.csv`: TARGET FILE
+- `outputs/district_match_report.csv`: TARGET FILE
 
 ## Quick setup on Windows PowerShell
 

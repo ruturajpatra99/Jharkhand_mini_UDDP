@@ -1,0 +1,25 @@
+{
+  "run_id": "b2248f1a0b794b2bb6a5c4d8eb6f9454",
+  "logical_date": "2026-10-30",
+  "output_path": "outputs/runs/b2248f1a0b794b2bb6a5c4d8eb6f9454",
+  "input_fingerprint": "a2c696bf7e437e1d6eb419b6f48e434d17bb70641ab7d6162cb0b5a70b245fcb",
+  "config_sha256": "2b7c8de515c09e34471651a2e1e1639beb77a33be88f81038e4c8407c2d256ec",
+  "code_sha256": "a701aa9cf2edc83a1ab8503f26de094a5d400176386ce4016fb93d380ca94a1a",
+  "csv_sha256": {
+    "data_quality_report.csv": "cb13d15473fca41a5c178575e39405286500e71e2f4465212fe77d87549732b1",
+    "district_match_report.csv": "b21f23ebefe8a8a9f2c2ade257edd4d7212fb4d2a9c316a8614bea2245a3fc43",
+    "mart_district_pension_outreach.csv": "34d2096f53e81943cebfec2fee95ca27f3896a6e019dc3f39ee3a0ecff2a0e54",
+    "ml_district_features.csv": "3e3450ca292859d07e0e8e9c6ea743a989ae6b9458198665c46455a65f092d88",
+    "rejected_records.csv": "06e4a1388270900b8db41f9073487982b1c6af7fca2f52e97629a4cfa4eb2982",
+    "row_reconciliation.csv": "9e1eaf15d19010e27c7eea99ef1d6d57fa87067329c706059e42aa72368f24d8",
+    "score_sensitivity.csv": "b64268a42fa01395089743271ab2149034ce55c518b69a92ca432dd06d6f06c6",
+    "silver/dim_district.csv": "55ee57f34770acc85d688cc9186022047fd42f4d09c15b7490238ac0efec6883",
+    "silver/district_name_mapping.csv": "7914add7611022afa20b09226df23b49a28b6609d12ba633284a292c27f857d6",
+    "silver/fact_district_demographics.csv": "0a16713e78245c34f84ffe0550ceb17cd48d31c91a0d4ac03d4e79b22d9cfd84",
+    "silver/fact_district_housing.csv": "26ad87a657ab7889d03f779f3dd6d13d4742aa388acca56d5859f515e6256408",
+    "silver/fact_pension_beneficiaries.csv": "7a012127d70f257f28303691a4d9a822d0f10c9d67a325089c5beaa33ab9f9ec",
+    "silver/pension_state_rollup.csv": "b149aeb2f27d679d10aadd4932db42e46351804d79e6f045d1fdd951c5e362c8",
+    "unmatched_records.csv": "facddc8c202cd8e2b70672e4cc781e4e3e2e31fc799717fca37a6e964b8c8553"
+  },
+  "status": "SUCCEEDED"
+}

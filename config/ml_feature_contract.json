@@ -1,0 +1,10 @@
+{
+  "target": "high_priority",
+  "target_kind": "rule_derived_not_independent_outcome",
+  "training_performed": false,
+  "descriptive_feature_columns": ["population_per_household", "female_population_share", "literacy_rate", "work_participation_rate", "sc_population_share", "st_population_share", "dilapidated_share", "open_defecation_share"],
+  "unavailable_features": ["old_age_beneficiary_coverage", "widow_beneficiary_coverage", "household_coverage_ratio"],
+  "direct_leakage_exclusions": ["district_code", "pension_outreach_priority_score", "priority_category", "high_priority", "score_version"],
+  "warning": "The score ingredients still define the target; removing direct leakage columns does not create independent predictive ground truth.",
+  "future_validation": "Independent outcomes, as-of features, temporal evaluation, train-only preprocessing, geographic holdout and policy/fairness review."
+}

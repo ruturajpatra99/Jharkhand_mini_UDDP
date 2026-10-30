@@ -2,8 +2,6 @@
 
 A locally reproducible batch pipeline integrates the **three supplied CSV snapshots** for 24 Jharkhand Census districts. Spark performs cleaning, joins, feature engineering and explainable outreach ranking. A single Python driver writes validated district outputs to SQLite in one transaction.
 
-**Interpretation:** the district pension counts are supplied **estimates**, preserved exactly. Per-1,000 rates are population/household-normalized estimates, not eligible-person coverage. Census observations are from 2011; the pension reference year and allocation method are not supplied. This is an assessment demonstration, not a current eligibility decision system.
-
 ## Start here
 
 - `PROJECT_ANALYSIS_AND_FUTURE_IMPROVEMENTS.md`: findings, engineering decisions, actual issues and roadmap.

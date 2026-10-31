@@ -1,6 +1,6 @@
 # Jharkhand Mini-UDDP — PySpark and SQLite
 
-A locally reproducible batch pipeline integrates the **three supplied CSV snapshots** for 24 Jharkhand Census districts. Spark performs cleaning, joins, feature engineering and explainable outreach ranking. A single Python driver writes validated district outputs to SQLite in one transaction.
+The pipeline integrates three supplied aggregate CSV files, filters Jharkhand, validates district records and produces an outreach mart and ML feature table for **24 districts**. Pension counts are supplied **estimates**, preserved unchanged. They are not officially observed district beneficiary counts.
 
 ## Important files
 
@@ -12,126 +12,313 @@ A locally reproducible batch pipeline integrates the **three supplied CSV snapsh
 - `outputs/ml_district_features.csv`: TARGET FILE
 - `outputs/district_match_report.csv`: TARGET FILE
 
-## Quick setup on Windows PowerShell
+## Verified working setup
 
-Use 64-bit **Python 3.12** (for example Windows installer 3.12.10), **JDK 17**, and a fresh virtual environment. The verification environment used Python 3.12.14 / OpenJDK 17.0.20. PySpark is pinned to 3.5.6 and py4j to 0.10.9.7. SQLite comes with Python; version 3.37+ is required for STRICT tables.
+| Component | Working version |
+|---|---|
+| Operating system | Windows 11 |
+| Terminal | VS Code PowerShell |
+| Python | 3.11.9, 64 bit |
+| Virtual environment | `.venv311` |
+| Java | Temurin JDK 17.0.20.1 |
+| PySpark | 3.5.6 |
+| SQLite | Included with Python; version 3.37 or newer required |
+
+**Use Python 3.11 for this Windows setup.** Python 3.12 started Spark but crashed when Python workers executed. The same worker test passed with Python 3.11, followed by a successful full pipeline run. The earlier Linux verification used Python 3.12; that does not establish Windows compatibility.
+
+## Quick start when dependencies are already installed
+
+Open your existing GitHub project folder in VS Code. Select **Terminal → New Terminal → PowerShell**. Run the following commands in that terminal.
+
+### 1 Open the project directory
 
 ```powershell
-cd C:\projects\jharkhand-mini-uddp
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-# Point this to your installed JDK directory, not its bin directory:
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
-$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
-$env:PYSPARK_PYTHON = (Resolve-Path .\.venv\Scripts\python.exe).Path
+cd "C:\Users\pc\mini UDDP pipeline\jharkhand-mini-uddp"
+```
+
+Replace this path if your checkout lives elsewhere. Run `dir` and confirm that `src`, `config`, `data`, `scripts` and `requirements-dev.txt` are present.
+
+### 2 Configure Java and Python for this terminal
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot'
+$venvScripts = (Resolve-Path .\.venv311\Scripts).Path
+$env:PATH = "$venvScripts;$env:JAVA_HOME\bin;$env:PATH"
+$env:PYSPARK_PYTHON = 'python.exe'
+$env:PYSPARK_DRIVER_PYTHON = 'python.exe'
 $env:SPARK_LOCAL_IP = '127.0.0.1'
-.\.venv\Scripts\python.exe scripts\verify_environment.py
-.\.venv\Scripts\python.exe -m src.main --work-dir runtime --logical-date 2026-10-30
-.\.venv\Scripts\python.exe -m src.inspect_db runtime\uddp.sqlite
-.\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Virtual-environment activation is optional; explicit interpreter paths avoid PowerShell activation-policy problems. Use your actual JDK path. `requirements.txt` is sufficient for the pipeline; `requirements-dev.txt` also installs pandas/NumPy/PyArrow because Spark's test-helper import requires them. Transformations do not use pandas. `requirements-docs.txt` is only for regenerating figures and Word documentation.
+The Java path above matches the successful user setup. On another machine, replace it with the actual JDK 17 folder containing `bin\java.exe`.
 
-Linux/macOS:
+Putting the virtual environment first on PATH lets Spark call `python.exe` without passing the full executable path containing spaces. Your existing GitHub folder can stay in its current location.
 
-```bash
-python3.12 -m venv .venv
-.venv/bin/python -m pip install -r requirements-dev.txt
-export PYSPARK_PYTHON="$PWD/.venv/bin/python"
-export SPARK_LOCAL_IP=127.0.0.1
-.venv/bin/python scripts/verify_environment.py
-.venv/bin/python -m src.main --work-dir runtime --logical-date 2026-10-30
-.venv/bin/python -m pytest -q
+These settings last for the current terminal only. Repeat this configuration after opening a new terminal; do not reinstall dependencies each time.
+
+### 3 Check the selected programs
+
+```powershell
+java -version
+python.exe -c "import sys; print(sys.version); print(sys.executable)"
 ```
 
-For Windows Hadoop native-library errors, see `docs/deployment_guide.md`. Do not download unsigned arbitrary `winutils.exe` binaries. WSL2 is a practical local Linux alternative.
+Expected: Java 17, Python 3.11.9 and an executable ending in `.venv311\Scripts\python.exe`.
 
-## Inputs and grain
+### 4 Run the pipeline
 
-| Input in `data/input` | Raw rows | Jharkhand rows | Meaning |
-|---|---:|---:|---|
-| `india-districts-census-2011(3).csv` | 640 | 24 | Census district demographics |
-| `District-level households and housing indicators(3).csv` | 640 | 24 | District housing percentages, Total geography |
-| `Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv` | 24 | 24 | Supplied estimated district pension counts |
+```powershell
+.\.venv311\Scripts\python.exe -m src.main --work-dir runtime
+```
 
+Wait for PowerShell to return to its prompt. Spark displays progress and logs during execution. A successful run ends with a JSON summary containing:
 
-The housing total is 100 in every Jharkhand row, so it is not used as a household count. `demographics.Households` supplies the count. The distinct source household universes have not been independently verified. `Literate/Population` is a crude literacy share, not the official age-seven-plus literacy rate. Elderly 60+ and eligible-widow denominators are absent.
+```json
+{"status": "SUCCEEDED"}
+```
 
-## Architecture
+This is only an excerpt; the actual summary also includes the run ID, output path and hashes. A traceback or `Pipeline failed` message means the run needs investigation.
+
+### 5 Open your generated results
+
+```powershell
+$run = Get-Content .\runtime\outputs\latest_success.json -Raw | ConvertFrom-Json
+$runFolder = Join-Path (Resolve-Path .\runtime).Path $run.output_path
+explorer.exe $runFolder
+```
+
+The latest-success file identifies the published run. Do not choose a folder merely because it is newest: failed attempts also retain diagnostic folders.
+
+| File in the successful run folder | What it contains |
+|---|---|
+| `mart_district_pension_outreach.csv` | 24 district records, pension estimates, rates, score and category |
+| `ml_district_features.csv` | 24 district feature records and rule-derived target |
+| `data_quality_report.csv` | Expected and actual values, status, severity and resolution |
+| `data_quality_report.md` | Readable quality summary |
+| `district_match_report.csv` | Matching status for each source and district |
+| `row_reconciliation.csv` | Accounting for source, excluded, accepted and rejected rows |
+| `rejected_records.csv` | Rejected records and reasons; header-only for the clean baseline |
+| `score_sensitivity.csv` | Alternative weights and their effect on district ranks |
+| `silver` folder | Cleaned tables exported as CSV |
+| `publication.json` | Run identity, source/config/code fingerprints and CSV hashes |
+
+Open CSV files in Excel or VS Code. The database is `runtime\uddp.sqlite`.
+
+```powershell
+.\.venv311\Scripts\python.exe -m src.inspect_db runtime\uddp.sqlite
+```
+
+The packaged `outputs` directory contains the delivered sample. Your new runs publish under `runtime`; they do not replace that sample directory.
+
+## First time installation
+
+Skip this section if `.venv311` is installed and the pipeline already works.
+
+1. Install the **Windows 64-bit Python 3.11.9 installer** from [Python](https://www.python.org/downloads/release/python-3119/).
+2. Install **JDK 17** from a trusted vendor such as [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=17).
+3. Open the project folder in VS Code and start a PowerShell terminal.
+4. Check Python, create a new virtual environment and install the pinned packages:
+
+```powershell
+py -3.11 --version
+py -3.11 -m venv .venv311
+.\.venv311\Scripts\python.exe -m pip install --upgrade pip setuptools wheel
+.\.venv311\Scripts\python.exe -m pip install -r requirements-dev.txt
+```
+
+Wait for each command to finish before running the next. A virtual environment is a private collection of Python packages for this project. Explicit interpreter paths mean activation is unnecessary.
+
+The development requirements include PySpark 3.5.6, py4j 0.10.9.7, pytest 8.3.5, NumPy 1.26.4, pandas 2.2.3 and PyArrow 17.0.0. pandas and PyArrow support Spark's testing utilities; business transformations use Spark DataFrames and SQL.
+
+SQLite is bundled with Python. No separate database server, JDBC driver, Spark cluster or cloud account is required. `requirements-docs.txt` is only needed to regenerate report diagrams and the interviewer Word document.
+
+In VS Code, press **Ctrl+Shift+P → Python: Select Interpreter → Enter interpreter path** and select the `.venv311\Scripts\python.exe` in this project. Terminal environment configuration is still required for Java and Spark.
+
+Continue with the Quick start configuration above.
+
+## Environment and worker checks
+
+Run the environment check:
+
+```powershell
+.\.venv311\Scripts\python.exe scripts\verify_environment.py
+```
+
+Expected final message: `Spark action: PASS; 24 rows`.
+
+That check exercises a Spark action but does not prove Python workers work. To verify Python worker execution, paste this entire PowerShell block:
+
+```powershell
+@'
+import sys
+from pyspark.sql import SparkSession
+
+print("Python:", sys.version)
+print("Executable:", sys.executable)
+spark = SparkSession.builder.master("local[1]").appName("WorkerCheck").getOrCreate()
+try:
+    result = spark.sparkContext.parallelize([1, 2, 3], 1).map(lambda x: x + 1).collect()
+    print("WORKER TEST PASSED:", result)
+finally:
+    spark.stop()
+'@ | .\.venv311\Scripts\python.exe -
+```
+
+Expected: `WORKER TEST PASSED: [2, 3, 4]`.
+
+## Inputs and architecture
+
+Keep the three supplied source files unchanged in `data/input`. The shipped configuration expects:
+
+- `india-districts-census-2011(3).csv`
+- `District-level households and housing indicators(3).csv`
+- `Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv`
+
+Actual filenames must match `config/settings.json`. Do not rename a file without updating its declared filename.
 
 ```mermaid
 flowchart TD
- S[Uploaded CSVs] --> B[Bronze unchanged files and manifests]
- B --> C[Spark cleaning and district mapping]
- C --> Q[Quarantine and quality gate]
- C --> V[Silver DataFrames]
- V --> G[Spark SQL district join]
- G --> R[Explainable score and ranking]
- R --> M[Gold and ML features]
- M --> L[Single driver SQLite transaction]
- L --> O[Versioned CSVs and database]
- Q --> A[Audit history and local alerts]
- L --> A
+    A[Three supplied CSV files] --> B[Bronze unchanged files and manifests]
+    B --> C[Silver cleaning and district matching]
+    C --> D[Quality checks and quarantine]
+    C --> E[Gold outreach mart and ML features]
+    E --> F[Single transactional SQLite writer]
+    F --> G[SQLite database and versioned CSV outputs]
+    D --> H[Run audit and local failure alerts]
 ```
 
-The driver copies raw bytes and records SHA-256, source filename, ingestion time and record count. Spark rereads Bronze as strings, then converts selected fields safely. Exact duplicates retain the earliest logical CSV record and report later copies. Conflicting duplicates are all quarantined and block publication. Inner joins build Gold only after left/anti joins have checked complete geographic coverage.
+Bronze preserves source evidence. Silver standardizes names, district codes and types. Gold creates district metrics and an explainable score. Data must pass the quality gates before a successful snapshot is published.
 
-Validated output is bounded to at most 1,000 rows per collected table. This is an explicit small-output contract. The database uses one connection, parameterized `executemany`, batches of 100, PK/FK/CHECK constraints and `BEGIN IMMEDIATE`. Stable Silver facts use UPSERT. Derived Gold/ML rows are refreshed transactionally to avoid temporary collisions when unique ranks swap. No Spark executors or JDBC driver write SQLite.
+### Main database tables
 
-## Database tables
+| Table | Grain |
+|---|---|
+| `dim_district` | One row per district |
+| `fact_district_demographics` | District and latest source snapshot |
+| `fact_district_housing` | District and latest source snapshot |
+| `fact_pension_beneficiaries` | District and scheme, supplied estimate |
+| `pension_state_rollup` | State and scheme, sum of district estimates |
+| `mart_district_pension_outreach` | One row per district |
+| `ml_district_features` | One row per district |
 
-| Table | Grain | Expected baseline rows |
-|---|---|---:|
-| dim_district | Census district | 24 |
-| fact_district_demographics | District, latest source snapshot | 24 |
-| fact_district_housing | District, latest source snapshot | 24 |
-| fact_pension_beneficiaries | District and pension scheme, supplied estimate | 72 |
-| pension_state_rollup | State and scheme, sum of district estimates | 3 |
-| mart_district_pension_outreach | District | 24 |
-| ml_district_features | District | 24 |
-| district_name_mapping | Source and district | 72 |
-| etl_run_log | Execution attempt | Grows |
-| source_ingestion_manifest | Run and source | Three per ingested run |
-| rejected_records | Run, source and logical CSV record | Zero for supplied clean baseline |
-| data_quality_results | Run and check | Grows |
+Supporting tables retain source manifests, mappings, rejected records, quality results and execution history. SQLite receives bounded results through one Python driver connection and parameterized transactions. No Spark executors write SQLite concurrently.
 
-The original assessment's state/scheme pension grain is revised with authorization from the new brief. `pension_state_rollup` retains that summary grain but is explicitly derived from estimates, not independently observed. Latest-snapshot business tables do not preserve multiple observation years; schema changes would be required for genuine historical facts.
+## Interpret results correctly
 
+- Old-age pension estimates sum to **993,567**; widow estimates to **272,108**; disability estimates to **31,286**.
+- All 72 supplied district/scheme values are preserved; the pipeline does not generate fresh allocations.
+- Rates per 1,000 residents are population-normalized estimated entries, not coverage among eligible persons.
+- Census indicators are historical. Pension reference year and allocation methodology are not supplied.
+- Housing `Total Number of households` equals 100 in the Jharkhand input and is treated as a percentage base. Census `Households` provides the absolute household count, with its universe limitation documented.
+- Elderly share and eligibility-based coverage remain NULL because verified denominators are absent.
+- The score weights are 35% dilapidated housing, 25% open sanitation, 20% low crude literacy, 10% low estimated old-age rate and 10% low estimated widow rate, using min-max normalization.
+- Score descending and district code ascending create deterministic ranks: **8 High, 8 Medium and 8 Low** districts. Godda ranks first at **84.58835663** for these inputs.
+- `high_priority` is derived from the same rule. It is not an independent outcome label proving predictive performance.
 
-## AI-ready features
+## Run automated tests
 
-The feature table contains household-size, female/crude-literacy/work/SC/ST shares, estimated pension rates, housing shares, estimate indicator, score and category. Unsupported eligibility measures remain NULL. `high_priority=1` exactly when category is High. Score, rank/category and their deterministic inputs must not be presented as proof of independently predictive ML. With only 24 rows and a rule-derived target, no model is trained. A future task needs independently measured outcomes, time-aligned features and train-only preprocessing.
-
-## Quality and reconciliation
-
-Raw rows equal out-of-scope plus accepted source rows plus quarantined rows. Pension reshaping converts 24 accepted source rows into 72 district/scheme facts. Totals must equal the supplied controls exactly: 993,567 old age; 272,108 widow; 31,286 disability. Discrepancies fail without rescaling.
-
-Checks cover identifiers, duplicate keys/names, numeric parsing and domains, household/population consistency, source/code matches, anti joins, join cardinality, required fields, score range, target/formula checks, freshness, foreign keys and publication. Reports provide expected/actual values, PASS/WARN/FAIL, severity, affected records and resolution. Four baseline warnings disclose source limitations rather than fabricated quality failures.
-
-## Run outputs and operations
-
-`runtime/outputs/latest_success.json` points to an immutable run folder relative to `runtime`. It contains Gold and ML CSVs, Silver exports, quality reports in CSV/JSON/Markdown, matching/reconciliation/quarantine files, sensitivity scenarios, settings snapshots and hash evidence. The packaged `outputs/` contains a verified sample; new runs publish under `runtime/`.
-
-Reruns preserve business rows and deterministic analytical CSV hashes; run IDs, timestamps and audits change. An exclusive lock prevents concurrent runners. Retry applies only to transient ingestion I/O errors, not missing files or invalid data. Failed attempts retain audits and a local JSON alert hook. No external notification is sent.
-
-Before commit, any error rolls back business changes. A post-commit pointer error leaves the committed run authoritative; recover the output path from `etl_run_log`. Never read a candidate run folder merely because it exists. Never delete an active writer's lock.
-
-```bash
-python -m src.main --work-dir runtime --backfill-start 2026-10-28 --backfill-end 2026-10-30
+```powershell
+.\.venv311\Scripts\python.exe -m pytest -q
 ```
 
-Backfill replays at most 32 logical dates over the supplied snapshots. It does not create missing historical observations. Configuration is JSON, with explicit CLI/environment path overrides. `.env.example` is documentation; no dotenv loader is hidden in the code.
+To retain a log and stop at the first failure:
 
-## Verification and extension
-
-```bash
-python scripts/verify_sample.py
-python -m src.profile_sources
-python -m src.inspect_db runtime/uddp.sqlite
-python -m pytest -q --junitxml=outputs/pytest_results.xml
+```powershell
+.\.venv311\Scripts\python.exe -m pytest -x -vv -s *> pytest_first_failure.log
 ```
 
-See `docs/verification.md` for actual execution results. PostgreSQL/warehouse migration should replace the small driver boundary with partitioned staging and a controlled merge. For 23 departments, use versioned data contracts, source adapters, geographic/time dimensions, lineage and departmental SLAs before adding infrastructure. Only public aggregates are included; future personal-data integration requires authorized access, separate identity controls, minimization, encryption and audit trails.
+Open the captured log:
 
-Technical compatibility references: [Spark 3.5.6 overview](https://spark.apache.org/docs/3.5.6/), [Spark configuration](https://spark.apache.org/docs/3.5.6/configuration.html), [SQLite UPSERT](https://www.sqlite.org/lang_upsert.html), [SQLite transactions](https://www.sqlite.org/lang_transaction.html).
+```powershell
+code .\pytest_first_failure.log
+```
+
+For an isolated rerun/idempotency check:
+
+```powershell
+.\.venv311\Scripts\python.exe -m pytest tests/test_pipeline.py::test_end_to_end_and_idempotency -x -vv -s *> pytest_idempotency.log
+```
+
+Tests use temporary working directories. Keep the full earliest error: later `ConnectionRefusedError` messages may cascade after the Java process becomes unavailable.
+
+### Honest verification status
+
+| Check | Evidence |
+|---|---|
+| Original Linux test suite | 55 passed in the delivered revision |
+| Windows Python worker check | Passed on Python 3.11.9 |
+| Windows full pipeline | SUCCEEDED on 31 October 2026, with 24 districts |
+| Cross-platform Gold and ML outputs | Windows hashes matched delivered verified hashes |
+| Windows full pytest suite | Not yet passing; uploaded run reported 30 failed, 16 passed and 10 errors |
+| Windows test investigation | First-failure capture required; original cause not established |
+
+The successful Windows run ID was `13cb0024773d4e7ebbb4b387ab1c246d`. Gold SHA-256 was `34d2096f53e81943cebfec2fee95ca27f3896a6e019dc3f39ee3a0ecff2a0e54`; ML SHA-256 was `3e3450ca292859d07e0e8e9c6ea743a989ae6b9458198665c46455a65f092d88`.
+
+The expected clean-baseline quality report has 37 PASS, 4 WARN and 0 FAIL. Inspect your actual run report to confirm. Warnings disclose source limitations; they do not replace the separate automated test results.
+
+## Reruns and backfill
+
+Run the same pipeline command again to refresh the database snapshot. Primary keys and transactional loading prevent duplicate business rows. Run IDs, timestamps and audit records change; deterministic analytical CSV hashes should stay the same for unchanged inputs/configuration/code.
+
+Use a specific logical date when needed:
+
+```powershell
+.\.venv311\Scripts\python.exe -m src.main --work-dir runtime --logical-date 2026-10-31
+```
+
+Backfill example:
+
+```powershell
+.\.venv311\Scripts\python.exe -m src.main --work-dir runtime --backfill-start 2026-10-29 --backfill-end 2026-10-31
+```
+
+Backfill accepts at most 32 dates. It replays the supplied snapshots; it does not manufacture historical observations. A logical date is a run label, not the dataset's reference year.
+
+## Troubleshooting
+
+| Symptom | Next step |
+|---|---|
+| `java -version` fails | Test `& "$env:JAVA_HOME\bin\java.exe" -version`; verify the JDK 17 path |
+| Java 27 or `getSubject is not supported` | Set JAVA_HOME/PATH to JDK 17 in the current terminal |
+| Python worker crash with Python 3.12 on Windows | Use the `.venv311` environment and repeat the worker test |
+| `'UDDP' is not recognized` | Repeat the Quick start PATH and Python settings; verify `python.exe` resolves to `.venv311` |
+| `No module named pyspark` or `pytest` | Use the `.venv311` executable and install `requirements-dev.txt` |
+| Missing PyArrow during pytest collection | Install the development requirements |
+| `winutils.exe` or native Hadoop warning | These warnings occurred during the successful run; investigate if followed by a real failure. Do not install arbitrary executable downloads |
+| Many `WinError 10061` test errors | Capture the first failing test; do not assume dozens of independent data defects |
+| Pipeline lock already exists | Confirm no run is active; follow `docs/deployment_guide.md` for stale-lock recovery |
+| Data-quality failure | Inspect the failed run report and rejects; never alter estimate counts simply to meet totals |
+
+A process-termination message after a successful summary can be Spark cleanup. It does not override a preceding failure or establish success by itself. Check the pipeline summary and authoritative database run audit.
+
+## Keep virtual environments out of GitHub
+
+Add these lines to your existing `.gitignore` if absent:
+
+```gitignore
+.venv/
+.venv311/
+.venv312/
+__pycache__/
+.pytest_cache/
+runtime/
+*.log
+.env
+```
+
+This does not remove files already tracked by Git. Check `git status` before committing. Commit source, requirements and documentation rather than installed environments. Keep credentials and real citizen data out of the repository.
+
+## Suggested demonstration
+
+1. Explain the three sources and their limitations.
+2. Show the worker test passing with Python 3.11 and JDK 17.
+3. Run the pipeline and show SUCCEEDED with 24 districts.
+4. Open the quality report, Gold mart and ML features.
+5. Explain pension total reconciliation and Godda's score.
+6. Show automated test evidence, distinguishing the passed Linux suite from the unresolved Windows test run.
+
+Read `ASSUMPTIONS.md` for metric limitations, `docs/schema_documentation.md` for table definitions, `docs/learning_and_demo.md` for interview preparation, and `docs/deployment_guide.md` for scheduling and recovery. The interviewer report is under `reports`.
+
+For scheduling later, Windows Task Scheduler can invoke the same CLI through a PowerShell wrapper that sets these environment variables and the project working directory. Establish a passing manual run first and allow only one scheduled instance at a time.
+
+Technical references: [Spark 3.5.6](https://spark.apache.org/docs/3.5.6/), [Apache issue SPARK-53759](https://issues.apache.org/jira/browse/SPARK-53759), [Python 3.11.9](https://www.python.org/downloads/release/python-3119/).
+

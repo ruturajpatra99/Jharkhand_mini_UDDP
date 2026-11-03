@@ -1,0 +1,67 @@
+{
+  "state": "Jharkhand",
+  "state_code": "20",
+  "expected_districts": 24,
+  "expected_codes": [
+    "346",
+    "347",
+    "348",
+    "349",
+    "350",
+    "351",
+    "352",
+    "353",
+    "354",
+    "355",
+    "356",
+    "357",
+    "358",
+    "359",
+    "360",
+    "361",
+    "362",
+    "363",
+    "364",
+    "365",
+    "366",
+    "367",
+    "368",
+    "369"
+  ],
+  "max_ingestion_age_hours": 24,
+  "retries": 3,
+  "retry_delay_seconds": 0.1,
+  "score_version": "estimated_context_v2",
+  "weights": {
+    "dilapidated": 0.35,
+    "open_defecation": 0.25,
+    "low_literacy": 0.2,
+    "low_old_age_rate": 0.1,
+    "low_widow_rate": 0.1
+  },
+  "sources": {
+    "demographics": {
+      "filename": "india-districts-census-2011(3).csv",
+      "url": "user-supplied:india-districts-census-2011(3).csv",
+      "source_year": 2011
+    },
+    "housing": {
+      "filename": "District-level households and housing indicators(3).csv",
+      "url": "user-supplied:District-level households and housing indicators(3).csv",
+      "source_year": 2011
+    },
+    "pensions": {
+      "filename": "Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv",
+      "url": "user-supplied:Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv",
+      "source_year": null
+    }
+  },
+  "pension_totals": {
+    "old_age": 993567,
+    "widow": 272108,
+    "disability": 31286
+  },
+  "spark_master": "local[2]",
+  "sqlite_batch_size": 100,
+  "max_collect_rows": 1000
+}

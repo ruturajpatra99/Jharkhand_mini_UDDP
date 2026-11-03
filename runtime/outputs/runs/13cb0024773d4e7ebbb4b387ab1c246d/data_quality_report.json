@@ -1,0 +1,371 @@
+[
+  {
+    "check_id": "demographics_row_reconciliation",
+    "expected_result": "640",
+    "actual_result": "640",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "demographics_expected_districts",
+    "expected_result": "24",
+    "actual_result": "24",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "demographics_valid_records",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "demographics_exact_duplicates",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "housing_row_reconciliation",
+    "expected_result": "640",
+    "actual_result": "640",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "housing_expected_districts",
+    "expected_result": "24",
+    "actual_result": "24",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "housing_valid_records",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "housing_exact_duplicates",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pensions_row_reconciliation",
+    "expected_result": "24",
+    "actual_result": "24",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pensions_expected_districts",
+    "expected_result": "24",
+    "actual_result": "24",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pensions_valid_records",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pensions_exact_duplicates",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "district_matching",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "dim_district_unique_key",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "fact_district_demographics_unique_key",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "fact_district_housing_unique_key",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "fact_pension_beneficiaries_unique_key",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "district_name_mapping_unique_key",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pension_state_rollup_unique_key",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "district_names_unique",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pension_total_old_age",
+    "expected_result": "993567",
+    "actual_result": "993567",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pension_total_widow",
+    "expected_result": "272108",
+    "actual_result": "272108",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pension_total_disability",
+    "expected_result": "31286",
+    "actual_result": "31286",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "demographics_ingestion_freshness",
+    "expected_result": "0..24 hours",
+    "actual_result": "0.017227078055555553",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "housing_ingestion_freshness",
+    "expected_result": "0..24 hours",
+    "actual_result": "0.017221572777777777",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pensions_ingestion_freshness",
+    "expected_result": "0..24 hours",
+    "actual_result": "0.017221572777777777",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "observation_currency",
+    "expected_result": "Current aligned observation periods",
+    "actual_result": "Census 2011; pension period unknown",
+    "status": "WARN",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "Obtain documented current reference periods before operational use."
+  },
+  {
+    "check_id": "pension_estimation",
+    "expected_result": "Observed district beneficiary counts",
+    "actual_result": "Supplied estimates preserved",
+    "status": "WARN",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "Validate against official district observations when authorized."
+  },
+  {
+    "check_id": "eligibility_denominators",
+    "expected_result": "Verified elderly and widow eligible populations",
+    "actual_result": "Unavailable; corresponding fields NULL",
+    "status": "WARN",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "Obtain eligible-population denominators before claiming scheme coverage."
+  },
+  {
+    "check_id": "household_universe",
+    "expected_result": "Verified comparable household universe",
+    "actual_result": "Demographic Households count; housing percentages separate",
+    "status": "WARN",
+    "severity": "WARNING",
+    "affected_records": "[]",
+    "recommended_resolution": "Reconcile official household definitions before interpreting cross-source totals."
+  },
+  {
+    "check_id": "gold_cardinality",
+    "expected_result": "24 rows and 24 keys",
+    "actual_result": "24 rows / 24 keys",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "ml_cardinality",
+    "expected_result": "24 rows and 24 keys",
+    "actual_result": "24 rows / 24 keys",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "score_range",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "priority_thirds",
+    "expected_result": "8 / 8 / 8",
+    "actual_result": "{'High': 8, 'Medium': 8, 'Low': 8}",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "target_consistency",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "old_age_rate_calculation",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "feature_share_calculation",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "required_feature_columns",
+    "expected_result": "none missing",
+    "actual_result": "[]",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "sqlite_foreign_keys",
+    "expected_result": "0",
+    "actual_result": "0",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "sqlite_gold_count",
+    "expected_result": "24",
+    "actual_result": "24",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  },
+  {
+    "check_id": "pipeline_completion",
+    "expected_result": "All stages succeeded",
+    "actual_result": "Spark validated and SQLite transaction ready",
+    "status": "PASS",
+    "severity": "ERROR",
+    "affected_records": "[]",
+    "recommended_resolution": "None"
+  }
+]

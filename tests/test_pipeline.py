@@ -14,6 +14,11 @@ def completed(tmp_path_factory,spark):
 
 def test_end_to_end_and_idempotency(completed):
     work,first,second=completed
+    assert len(second['excel_exports'])==2
+    for path,digest in second['excel_exports'].items():
+        import hashlib
+        assert hashlib.sha256((work/path).read_bytes()).hexdigest()==digest
+        assert (work/'outputs'/Path(path).name).read_bytes()==(work/path).read_bytes()
     for name in ['mart_district_pension_outreach.csv','ml_district_features.csv','score_sensitivity.csv']:
         assert first['csv_sha256'][name]==second['csv_sha256'][name]
     db=connect(work/'uddp.sqlite')
@@ -134,4 +139,26 @@ def test_publication_failure_records_one_completion_check(completed,spark,monkey
     assert (work/'outputs/latest_success.json').read_bytes()==pointer
     assert db.execute('SELECT COUNT(*) FROM mart_district_pension_outreach').fetchone()[0]==24
     assert not (work/'.pipeline.lock').exists()
+    db.close()
+
+
+def test_dashboard_integrated_and_failure_rollback(completed,spark,monkeypatch):
+    import hashlib
+    import src.orchestration as orchestration
+    from openpyxl import load_workbook
+    work,_,publication=completed
+    path=work/publication['dashboard_path']
+    assert load_workbook(path).sheetnames[0]=='Executive Dashboard'
+    assert hashlib.sha256(path.read_bytes()).hexdigest()==publication['dashboard_sha256']
+    latest=work/'outputs/dashboard/Jharkhand_UDDP_Interactive_Dashboard.xlsx'
+    assert latest.read_bytes()==path.read_bytes()
+    pointer=(work/'outputs/latest_success.json').read_bytes();before=latest.read_bytes()
+    def fail(*args,**kwargs):raise OSError('Injected dashboard failure')
+    monkeypatch.setattr(orchestration,'generate_dashboard',fail)
+    with pytest.raises(OSError,match='dashboard failure'):
+        run(ROOT,work,ROOT/'data/input','2026-10-30',spark=spark)
+    assert latest.read_bytes()==before and (work/'outputs/latest_success.json').read_bytes()==pointer
+    db=connect(work/'uddp.sqlite')
+    assert db.execute("SELECT status FROM etl_run_log ORDER BY started_at DESC LIMIT 1").fetchone()[0]=='FAILED'
+    assert db.execute('SELECT COUNT(*) FROM mart_district_pension_outreach').fetchone()[0]==24
     db.close()

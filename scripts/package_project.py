@@ -6,7 +6,7 @@ import json
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCLUDED = {'runtime', 'verified_runtime', '.git', '.venv', '__pycache__', '.pytest_cache'}
+EXCLUDED = {'runtime', 'verified_runtime', '.git', '.venv', '.venv311', '.venv312', 'dashboard_runtime', '__pycache__', '.pytest_cache'}
 
 
 def main() -> None:

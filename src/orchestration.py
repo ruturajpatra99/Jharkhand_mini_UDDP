@@ -1,6 +1,6 @@
 """Refactored batch runner: Spark transforms; one transactional SQLite writer."""
 from __future__ import annotations
-import hashlib,json,logging,os,sqlite3,time,uuid
+import hashlib,json,logging,os,sqlite3,time,uuid,shutil
 from pathlib import Path
 from typing import Callable,TypeVar
 from . import data_quality as dq
@@ -10,6 +10,8 @@ from .transform import transform
 from .scoring import score,sensitivity
 from .features import build_features
 from .spark_session import create_spark
+from .excel_dashboard import generate_dashboard
+from .excel_exports import generate_excel_exports
 T=TypeVar('T');LOGGER=logging.getLogger('uddp')
 
 
@@ -89,23 +91,37 @@ def run(project: Path,work: Path,input_dir: Path,logical_date: str,settings_path
             path=folder/f'{name}.csv' if name in ['mart_district_pension_outreach','ml_district_features'] else folder/'silver'/f'{name}.csv'
             export_rows(path,values)
         export_rows(folder/'score_sensitivity.csv',sensitivity_rows)
+        dashboard=folder/'dashboard/Jharkhand_UDDP_Interactive_Dashboard.xlsx'
+        generate_dashboard(folder,dashboard,run_id)
+        excel_exports=generate_excel_exports(folder)
         checks.append(dq.result('pipeline_completion',True,'All stages succeeded','Spark validated and SQLite transaction ready'))
         write_quality(folder,checks)
         (folder/'settings.json').write_text(json.dumps(settings,indent=2));(folder/'district_mapping.json').write_text(json.dumps(mapping,indent=2))
         hashes={str(p.relative_to(folder)):digest(p) for p in sorted(folder.rglob('*.csv'))}
         publication=dict(run_id=run_id,logical_date=logical_date,output_path=str(folder.relative_to(work)),input_fingerprint=fingerprint,
-                         config_sha256=config_hash,code_sha256=code_hash,csv_sha256=hashes,status='SUCCEEDED')
+                         config_sha256=config_hash,code_sha256=code_hash,csv_sha256=hashes,status='SUCCEEDED',
+                         dashboard_path=str(dashboard.relative_to(work)),dashboard_sha256=digest(dashboard),
+                         excel_exports={str(p.relative_to(work)):digest(p) for p in excel_exports})
         (folder/'publication.json').write_text(json.dumps(publication,indent=2))
         insert(db,'data_quality_results',[dict(run_id=run_id,**c) for c in checks])
         db.execute("UPDATE etl_run_log SET ended_at=?,status='SUCCEEDED',output_path=? WHERE run_id=?",(utcnow(),str(folder.relative_to(work)),run_id));db.commit()
         if fail_at=='after_commit':raise RuntimeError('Injected pointer failure after commit')
+        # Keep immutable per-run workbook; publish a convenient latest copy atomically.
+        latest_dashboard=work/'outputs/dashboard'/dashboard.name
+        latest_dashboard.parent.mkdir(parents=True,exist_ok=True)
+        dashboard_temp=latest_dashboard.with_suffix('.tmp')
+        shutil.copyfile(dashboard,dashboard_temp);os.replace(dashboard_temp,latest_dashboard)
+        for export in excel_exports:
+            latest=work/'outputs'/export.name
+            candidate=latest.with_suffix('.tmp')
+            shutil.copyfile(export,candidate);os.replace(candidate,latest)
         temp=work/'outputs/latest_success.tmp';temp.write_text(json.dumps(publication,indent=2));os.replace(temp,work/'outputs/latest_success.json')
         event('succeeded',run_id=run_id,districts=len(rows['mart_district_pension_outreach']))
         return publication
     except Exception as exc:
         if db:db.rollback()
         if db and started and db.execute('SELECT status FROM etl_run_log WHERE run_id=?',(run_id,)).fetchone()[0]=='SUCCEEDED':
-            alert(work,run_id,'Committed snapshot; pointer issue: '+str(exc));raise
+            alert(work,run_id,'Committed snapshot; dashboard/pointer publication issue: '+str(exc));raise
         # A publication error can occur after the tentative PASS was appended.
         # Replace it so the failure audit retains one row per run/check key.
         checks=[check for check in checks if check['check_id']!='pipeline_completion']

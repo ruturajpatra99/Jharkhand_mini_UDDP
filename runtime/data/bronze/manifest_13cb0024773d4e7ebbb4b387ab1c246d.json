@@ -1,0 +1,35 @@
+[
+  {
+    "run_id": "13cb0024773d4e7ebbb4b387ab1c246d",
+    "source_name": "demographics",
+    "filename": "india-districts-census-2011(3).csv",
+    "source_url": "user-supplied:india-districts-census-2011(3).csv",
+    "source_year": 2011,
+    "sha256": "88c924d78dc7d8b2b3b855262786098cf29ba9e172571fb82dd9bc68ca990318",
+    "ingestion_timestamp": "2026-10-31T06:23:32.123651+00:00",
+    "raw_rows": 640,
+    "bronze_path": "C:\\Users\\pc\\mini UDDP pipeline\\jharkhand-mini-uddp\\runtime\\data\\bronze\\demographics\\88c924d78dc7d8b2b3b855262786098cf29ba9e172571fb82dd9bc68ca990318\\india-districts-census-2011(3).csv"
+  },
+  {
+    "run_id": "13cb0024773d4e7ebbb4b387ab1c246d",
+    "source_name": "housing",
+    "filename": "District-level households and housing indicators(3).csv",
+    "source_url": "user-supplied:District-level households and housing indicators(3).csv",
+    "source_year": 2011,
+    "sha256": "afd9c87c6f0955d6db9531bfb9949b000b2318da0eb2231330218c6e104c8219",
+    "ingestion_timestamp": "2026-10-31T06:23:32.143470+00:00",
+    "raw_rows": 640,
+    "bronze_path": "C:\\Users\\pc\\mini UDDP pipeline\\jharkhand-mini-uddp\\runtime\\data\\bronze\\housing\\afd9c87c6f0955d6db9531bfb9949b000b2318da0eb2231330218c6e104c8219\\District-level households and housing indicators(3).csv"
+  },
+  {
+    "run_id": "13cb0024773d4e7ebbb4b387ab1c246d",
+    "source_name": "pensions",
+    "filename": "Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv",
+    "source_url": "user-supplied:Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv",
+    "source_year": null,
+    "sha256": "7cd988cc9963a1eacf039551f473f936a7c6a8017fd92240f11eb755b312d891",
+    "ingestion_timestamp": "2026-10-31T06:23:32.143470+00:00",
+    "raw_rows": 24,
+    "bronze_path": "C:\\Users\\pc\\mini UDDP pipeline\\jharkhand-mini-uddp\\runtime\\data\\bronze\\pensions\\7cd988cc9963a1eacf039551f473f936a7c6a8017fd92240f11eb755b312d891\\Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv"
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "canonical": {
+    "346": "Garhwa",
+    "347": "Chatra",
+    "348": "Kodarma",
+    "349": "Giridih",
+    "350": "Deoghar",
+    "351": "Godda",
+    "352": "Sahibganj",
+    "353": "Pakur",
+    "354": "Dhanbad",
+    "355": "Bokaro",
+    "356": "Lohardaga",
+    "357": "Purbi Singhbhum",
+    "358": "Palamu",
+    "359": "Latehar",
+    "360": "Hazaribagh",
+    "361": "Ramgarh",
+    "362": "Dumka",
+    "363": "Jamtara",
+    "364": "Ranchi",
+    "365": "Khunti",
+    "366": "Gumla",
+    "367": "Simdega",
+    "368": "Pashchimi Singhbhum",
+    "369": "Saraikela-Kharsawan"
+  },
+  "aliases": {
+    "koderma": "kodarma",
+    "east singhbhum": "purbi singhbhum",
+    "west singhbhum": "pashchimi singhbhum",
+    "seraikela kharsawan": "saraikela kharsawan",
+    "saraikela kharsawan": "saraikela kharsawan"
+  }
+}

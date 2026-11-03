@@ -1,0 +1,6 @@
+{"run_id": "9fb9e711a7804d87b3b880431b2eec08", "task": "extract", "timestamp": "2026-11-03T09:43:51.027521+00:00"}
+{"run_id": "9fb9e711a7804d87b3b880431b2eec08", "spark_version": "3.5.6", "task": "spark_transform", "timestamp": "2026-11-03T09:43:55.307126+00:00"}
+{"run_id": "9fb9e711a7804d87b3b880431b2eec08", "task": "gold_validated", "timestamp": "2026-11-03T09:45:05.922344+00:00"}
+{"task": "excel_dashboard_generated", "output": "C:\\Users\\pc\\mini UDDP pipeline\\jharkhand-mini-uddp\\runtime\\outputs\\runs\\9fb9e711a7804d87b3b880431b2eec08\\dashboard\\Jharkhand_UDDP_Interactive_Dashboard.xlsx", "districts": 24, "matched": 24, "issues": []}
+Generated separate Excel exports: C:\Users\pc\mini UDDP pipeline\jharkhand-mini-uddp\runtime\outputs\runs\9fb9e711a7804d87b3b880431b2eec08\mart_district_pension_outreach.xlsx, C:\Users\pc\mini UDDP pipeline\jharkhand-mini-uddp\runtime\outputs\runs\9fb9e711a7804d87b3b880431b2eec08\ml_district_features.xlsx
+{"districts": 24, "run_id": "9fb9e711a7804d87b3b880431b2eec08", "task": "succeeded", "timestamp": "2026-11-03T09:45:23.608057+00:00"}

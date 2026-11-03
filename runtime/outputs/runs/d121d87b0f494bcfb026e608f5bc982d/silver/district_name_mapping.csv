@@ -1,0 +1,73 @@
+source_name,district_code,raw_name,standardized_name,match_method
+demographics,346,Garhwa,Garhwa,code_and_validated_name
+housing,346,Garhwa,Garhwa,code_and_validated_name
+pensions,346,Garhwa,Garhwa,code_and_validated_name
+demographics,347,Chatra,Chatra,code_and_validated_name
+housing,347,Chatra,Chatra,code_and_validated_name
+pensions,347,Chatra,Chatra,code_and_validated_name
+demographics,348,Kodarma,Kodarma,code_and_validated_name
+housing,348,Kodarma,Kodarma,code_and_validated_name
+pensions,348,Kodarma,Kodarma,code_and_validated_name
+demographics,349,Giridih,Giridih,code_and_validated_name
+housing,349,Giridih,Giridih,code_and_validated_name
+pensions,349,Giridih,Giridih,code_and_validated_name
+demographics,350,Deoghar,Deoghar,code_and_validated_name
+housing,350,Deoghar,Deoghar,code_and_validated_name
+pensions,350,Deoghar,Deoghar,code_and_validated_name
+demographics,351,Godda,Godda,code_and_validated_name
+housing,351,Godda,Godda,code_and_validated_name
+pensions,351,Godda,Godda,code_and_validated_name
+demographics,352,Sahibganj,Sahibganj,code_and_validated_name
+housing,352,Sahibganj,Sahibganj,code_and_validated_name
+pensions,352,Sahibganj,Sahibganj,code_and_validated_name
+demographics,353,Pakur,Pakur,code_and_validated_name
+housing,353,Pakur,Pakur,code_and_validated_name
+pensions,353,Pakur,Pakur,code_and_validated_name
+demographics,354,Dhanbad,Dhanbad,code_and_validated_name
+housing,354,Dhanbad,Dhanbad,code_and_validated_name
+pensions,354,Dhanbad,Dhanbad,code_and_validated_name
+demographics,355,Bokaro,Bokaro,code_and_validated_name
+housing,355,Bokaro,Bokaro,code_and_validated_name
+pensions,355,Bokaro,Bokaro,code_and_validated_name
+demographics,356,Lohardaga,Lohardaga,code_and_validated_name
+housing,356,Lohardaga,Lohardaga,code_and_validated_name
+pensions,356,Lohardaga,Lohardaga,code_and_validated_name
+demographics,357,Purbi Singhbhum,Purbi Singhbhum,code_and_validated_name
+housing,357,Purbi Singhbhum,Purbi Singhbhum,code_and_validated_name
+pensions,357,Purbi Singhbhum,Purbi Singhbhum,code_and_validated_name
+demographics,358,Palamu,Palamu,code_and_validated_name
+housing,358,Palamu,Palamu,code_and_validated_name
+pensions,358,Palamu,Palamu,code_and_validated_name
+demographics,359,Latehar,Latehar,code_and_validated_name
+housing,359,Latehar,Latehar,code_and_validated_name
+pensions,359,Latehar,Latehar,code_and_validated_name
+demographics,360,Hazaribagh,Hazaribagh,code_and_validated_name
+housing,360,Hazaribagh,Hazaribagh,code_and_validated_name
+pensions,360,Hazaribagh,Hazaribagh,code_and_validated_name
+demographics,361,Ramgarh,Ramgarh,code_and_validated_name
+housing,361,Ramgarh,Ramgarh,code_and_validated_name
+pensions,361,Ramgarh,Ramgarh,code_and_validated_name
+demographics,362,Dumka,Dumka,code_and_validated_name
+housing,362,Dumka,Dumka,code_and_validated_name
+pensions,362,Dumka,Dumka,code_and_validated_name
+demographics,363,Jamtara,Jamtara,code_and_validated_name
+housing,363,Jamtara,Jamtara,code_and_validated_name
+pensions,363,Jamtara,Jamtara,code_and_validated_name
+demographics,364,Ranchi,Ranchi,code_and_validated_name
+housing,364,Ranchi,Ranchi,code_and_validated_name
+pensions,364,Ranchi,Ranchi,code_and_validated_name
+demographics,365,Khunti,Khunti,code_and_validated_name
+housing,365,Khunti,Khunti,code_and_validated_name
+pensions,365,Khunti,Khunti,code_and_validated_name
+demographics,366,Gumla,Gumla,code_and_validated_name
+housing,366,Gumla,Gumla,code_and_validated_name
+pensions,366,Gumla,Gumla,code_and_validated_name
+demographics,367,Simdega,Simdega,code_and_validated_name
+housing,367,Simdega,Simdega,code_and_validated_name
+pensions,367,Simdega,Simdega,code_and_validated_name
+demographics,368,Pashchimi Singhbhum,Pashchimi Singhbhum,code_and_validated_name
+housing,368,Pashchimi Singhbhum,Pashchimi Singhbhum,code_and_validated_name
+pensions,368,Pashchimi Singhbhum,Pashchimi Singhbhum,code_and_validated_name
+demographics,369,Saraikela-Kharsawan,Saraikela-Kharsawan,code_and_validated_name
+housing,369,Saraikela-Kharsawan,Saraikela-Kharsawan,code_and_validated_name
+pensions,369,Saraikela-Kharsawan,Saraikela-Kharsawan,code_and_validated_name

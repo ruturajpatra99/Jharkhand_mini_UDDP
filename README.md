@@ -300,12 +300,29 @@ Add these lines to your existing `.gitignore` if absent:
 .venv312/
 __pycache__/
 .pytest_cache/
-runtime/
 *.log
 .env
 ```
 
 This does not remove files already tracked by Git. Check `git status` before committing. Commit source, requirements and documentation rather than installed environments. Keep credentials and real citizen data out of the repository.
+
+## Automated interactive Excel dashboard
+
+Install the updated dependencies using `.\.venv311\Scripts\python.exe -m pip install -r requirements-dev.txt`. The main pipeline now creates **Jharkhand_UDDP_Interactive_Dashboard.xlsx** automatically from its mart, ML and matching CSVs.
+
+New runs: `runtime/outputs/dashboard/Jharkhand_UDDP_Interactive_Dashboard.xlsx`. Packaged verified sample: `outputs/dashboard/Jharkhand_UDDP_Interactive_Dashboard.xlsx`.
+
+Regenerate Excel alone without rerunning Spark:
+
+```powershell
+.\.venv311\Scripts\python.exe -m src.excel_dashboard --work-dir runtime
+```
+
+Use the Executive Dashboard for KPIs, High districts and six charts. The mart and ML Excel Tables support sorting/filtering and full-row red/yellow/green priorities. District Matching Report contains original matching records and a district/source matrix. District Comparison has two dropdowns. Dashboard Guide documents interpretation and refresh. Close the XLSX in Excel before regeneration. Open it in Excel to calculate formulas; no Excel installation is required to generate it.
+
+Scores and categories remain those from the existing pipeline. Counts remain supplied estimates; total scheme entries may overlap across people. The High list and chart ranking refresh when regenerated, while comparison dropdown formulas update inside Excel.
+
+See [the dashboard implementation guide](docs/excel_dashboard.md) for failure recovery, exact source mappings, tests and limits. A real rendered preview is included under `docs/dashboard_preview.png` when available. The new revision's test evidence is `outputs/pytest_dashboard_revision.xml`; it supersedes neither the earlier Linux run nor the unresolved user Windows test run.
 
 ## Suggested demonstration
 

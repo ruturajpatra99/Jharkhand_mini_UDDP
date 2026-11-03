@@ -4,11 +4,13 @@
 
 The Jharkhand Mini-UDDP assessment demonstrates how government departmental aggregates can become a reproducible district analytical dataset. Urban Development and Social Welfare users need a consistent comparison of demographic context, housing vulnerability and pension-related indicators. The output supports an explainable outreach-planning discussion; it cannot establish individual eligibility or prove actual unmet pension need.
 
-This revision uses only the three uploaded CSV  and makes **PySpark 3.5.6 + SQLite** the primary stack. It refactors the earlier implementation's transformation and pension model while preserving its raw-file hashing, canonical district reference, export utilities, CLI conventions, audit tables and transaction/publication boundaries. The earlier deliverable remains separate. This package supersedes its state-only pension NULL outputs with the newly authorized district estimates.
+This revision uses only the latest three uploaded CSV snapshots and makes **PySpark 3.5.6 + SQLite** the primary stack. It refactors the earlier implementation's transformation and pension model while preserving its raw-file hashing, canonical district reference, export utilities, CLI conventions, audit tables and transaction/publication boundaries. The earlier deliverable remains separate. This package supersedes its state-only pension NULL outputs with the newly authorized district estimates.
 
-Scope: 24 Census 2011 Jharkhand districts; batch snapshots; public aggregates only; local Spark execution; single SQLite writer; Gold and ML exports; automated testing; analysis, deployment guidance and interviewer documentation. Cloud services, actual individual beneficiaries, real-time integration and a trained predictive model are outside the implemented scope.
+
 
 ## B. Complete requirement analysis
+
+The official assessment has nine sections: business context, sources, objective, pipeline, score, operations, deliverables, evaluation and submission. Its weights are ETL design 25%, SQL/modeling 20%, data quality 20%, AI readiness 15%, production readiness 10% and documentation 10%. The revised user brief mandates Spark, supplied district estimates, UPSERT, a 16-chapter Word report with eight visuals and this A–M analysis.
 
 `docs/requirement_traceability.csv` contains **106 rows** with requirement ID, description, assessment section, priority, proposed implementation, responsible file, validation and status. `docs/requirement_traceability.md` is the readable companion. It preserves the original 88 requirements and adds 18 explicit revision requirements. Qualified statuses identify unavailable eligibility denominators, native Windows execution limits and optional infrastructure. Mandatory implementation is not conflated with optional deployment.
 
@@ -22,7 +24,7 @@ Scope: 24 Census 2011 Jharkhand districts; batch snapshots; public aggregates on
 | Reliability | Exclusive lock, one writer, UPSERT, rollback, scoped retries, publication authority | orchestration.py, load.py | Reruns, load/pointer failure injection, lock/retry tests |
 | Quality | Expected/actual/status/severity/affected/resolution and quarantine | data_quality.py | CSV/JSON/Markdown quality reports |
 | Reproducibility | Pinned packages, Windows/Linux commands, CLI and dated run evidence | README, deployment guide | Executed Linux pipeline and tests; Windows limitation disclosed |
-| Communication | Interview report, analysis, schema, diagrams and learning walkthrough | reports/, docs/, diagrams/ | Embedded-diagram and rendered-page checks |
+
 
 A source-level pension model at state/scheme grain is incompatible with claiming observed district counts. The revision resolves the storage requirement by using district/scheme **estimated** facts and a derived state/scheme rollup. It does not reinterpret estimates as observations. Unsupported elderly and eligible-widow fields remain NULL. A trained model, hosted scheduler and extra public sources remain optional and unimplemented.
 
@@ -34,6 +36,7 @@ A source-level pension model at state/scheme grain is incompatible with claiming
 | Housing | District-level households and housing indicators(3).csv | 640 / 156 | 24 / 24 |
 | Pension estimates | Jharkhand_District_Estimated_Pension_Beneficiaries_Updated(3).csv | 24 / 8 | 24 / 24 |
 
+The written brief's `(1)` names differ from the newest actual attachment suffixes. The configuration uses the `(3)` filenames and their unchanged bytes. All three current Jharkhand subsets contain the same codes 346–369, exact matching district names, no blank cells and no exact duplicate rows. These findings apply to these snapshots only. Alias handling is implemented and tested with synthetic spelling variants; the baseline did not require guessed fuzzy matching.
 
 `docs/source_column_profile.csv` inventories all **282 original columns** across the files, inferred Jharkhand types, blank/unique counts and a sample. Spark intentionally ingests strings before applying selected target types. The profile's inference is descriptive, not a replacement for explicit transformation schemas. Required selected numerics pass strict conversion/domain checks in the real run. Invalid commas, fractions in count fields, negatives, overflow and NaN are exercised by tests.
 
@@ -65,11 +68,25 @@ The following are actual findings or development issues. Test-injected defects a
 | Quality-report failure after tentative completion | A pending PASS could collide with the FAILED completion audit on its composite key | Replace the tentative completion result before persisting failure | Injected quality-publication failure verifies one FAIL completion, preserved snapshot and released lock | Disk-wide failure may still prevent local audit persistence |
 | Filesystem pointer is outside SQLite commit | A post-commit pointer error could mislabel successful data | DB successful-run log is authoritative; preserve committed outputs | Injected after-commit failure test | Recovery may need operator intervention |
 
-.
+No actual district-name conflicts, negative beneficiary values or missing Jharkhand records were found in the supplied inputs. Tests deliberately introduce such conditions, including missing names/codes, wrong state codes, bad numerics, invalid percentages, exact/conflicting duplicates and negative counts. Their purpose is to prove rejection and failure behaviour, not to imply the real sources contained these defects.
 
+Potential production issues such as API outages, distributed data skew, source change-data-capture ordering, concurrent departmental writers and government identity resolution were not encountered in this local run. They belong to the future-risk plan below, not the executed issue log.
 
+## E. Architecture decisions
 
-## E. Implementation details
+**Why Spark:** required by the revised brief, and useful for demonstrating reusable expression-based cleansing, joins, aggregations and windows. Local[2] is an execution mode, not evidence of cluster scalability. For 24 output districts the JVM startup is overhead; a simpler Python/SQLite solution could be faster locally but would not satisfy the revised stack requirement.
+
+**Why SQLite:** it minimizes infrastructure while retaining relational constraints and transactional SQL. The driver only collects bounded, validated district tables. A JDBC connector was unnecessary; no claim of direct Spark-to-SQLite writing is made. PostgreSQL or a warehouse is a better serving layer once concurrent readers/writers, large history or departmental SLAs become material.
+
+**Why medallion layers:** Bronze preserves evidence, Silver establishes consistent meaning and keys, Gold exposes question-specific metrics. Run-specific exports and input/code/config hashes connect these layers. Quarantine is a side output with records and reasons, not a silent filter.
+
+**Why keys plus names:** canonical Census district codes provide stable joins for these source years. A second name check catches wrongly assigned codes. Controlled aliases are explainable; fuzzy matching was rejected because an uncertain match should not become a silent administrative fact.
+
+**Why these weights:** 80% combines housing and literacy need proxies; 20% uses low estimated pension rates to satisfy the revised analytical intent without allowing them to dominate. Weights are policy choices, not statistical discoveries. Equal per-person estimated rates could make pension inputs uninformative; constant inputs receive zero. In this file, widow estimates vary only from roughly 8.0704 to 8.4928 per 1,000 population, so min-max normalization amplifies a narrow range. This is a material limitation, not a calibrated effect size. The no-pension sensitivity scenario helps expose it.
+
+**Why no trained model:** the target is derived from the same score inputs, and there are only 24 records. Training on it would mainly learn the deterministic rule. A proper outcome could be later independently audited outreach uptake with features fixed before intervention. Current outputs are feature contracts and illustrative labels, not predictive evidence.
+
+## F. Implementation details
 
 | Module/file | Responsibility | Key functions or operations |
 |---|---|---|
@@ -97,7 +114,7 @@ Before the load, Spark outputs pass required keys, matching and cardinality chec
 
 Outputs are staged in a run-specific folder before database commit. The transaction records business rows, quality checks and success status together. The latest-success pointer is written afterward. Failed/candidate folders must not be consumed without a successful authoritative audit. Extraction I/O retry uses bounded exponential delay; validation failures are not retried. Backfill accepts at most 32 dates and reuses explicitly selected input snapshots.
 
-## F. Testing and validation
+## G. Testing and validation
 
 Actual results and package-level evidence are consolidated in `docs/verification.md`, `outputs/verification_summary.json` and pytest's JUnit XML. Tests use the real public aggregate baseline for end-to-end verification and deterministic, clearly separated synthetic defects for failure paths.
 
@@ -107,7 +124,7 @@ Baseline quality has 37 PASS, 4 WARN and 0 FAIL. Warnings disclose historical/un
 
 Tests and checks validate contracts and arithmetic, not the factual accuracy of the supplied estimates. Native Windows and cloud-server execution are not claimed. The package includes explicit reproduction commands and a read-only inspection utility.
 
-## G. Known limitations
+## H. Known limitations
 
 - District pension values are estimates, with no documented allocation method, reference period or uncertainty intervals in the three primary files.
 - Census values are historical and use Census district identities. Current administrative boundaries and LGD codes may need crosswalks.
@@ -120,8 +137,19 @@ Tests and checks validate contracts and arithmetic, not the factual accuracy of 
 - No live APIs, CDC, streaming or automatic external alerts are implemented. Scheduling guidance is provided, not a deployed production service.
 - The ML label is rule-derived; it has no independently established predictive meaning.
 
+## I. Future implementations
 
-## H. Features that would make UDDP more useful
+Prioritize better source meaning before more infrastructure. First obtain approved current district pension observations, reference periods, documented household definitions and eligible populations. Introduce source contracts with owner, schema, grain, refresh schedule, coding system, privacy classification and permitted use. Maintain immutable snapshots and code/config hashes during every migration.
+
+Next add API/file adapters with schema-version detection, authenticated secret handling, rate limiting and retrieval checkpoints. Incremental loading requires stable source keys, modification times/tombstones and explicit late-arrival rules. CDC is appropriate only when source transaction semantics, deletes and ordering are available; it is not equivalent to repeatedly downloading snapshots.
+
+For larger workloads, store Bronze/Silver in governed object storage using partitioned Parquet and a transaction-capable table format where justified. Replace driver collection with partitioned staging. Bulk-load PostgreSQL or a warehouse, validate the staged batch and merge under controlled transaction semantics. Add Airflow/another orchestrator when dependencies, SLAs and recovery need it, not merely to add a tool name.
+
+Introduce a metadata catalog, column lineage, schema-change alerts, row-volume and distribution monitoring, and source freshness dashboards. Baseline statistical anomaly alerts should be reviewed alongside known policy/boundary changes. New ML development needs independent labels, temporal holdouts, train-only preprocessing, drift monitoring and intervention-aware evaluation.
+
+For sensitive integrations, separate identity linkage from analytical marts; apply least privilege, encryption, managed keys, audit trails, retention rules and small-cell protection. A hash of a predictable identifier alone is not anonymization. Real government data requires explicit authorization and governance before collection.
+
+## J. Features that would make UDDP more useful
 
 | Feature | Business benefit | Technical requirements | Complexity | Priority | Dependencies and data needed |
 |---|---|---|---|---|---|
@@ -139,6 +167,58 @@ Tests and checks validate contracts and arithmetic, not the factual accuracy of 
 
 No dashboard, boundary map or ML model is claimed to have been built in this revision. These are ranked proposals with explicit prerequisites.
 
+## K. Scaling to 23 departments
 
+Use a configuration-driven framework with one adapter per access pattern (file/API/database), not one bespoke pipeline per district. Each department owns a versioned contract. Ingestion creates immutable source batches with checksums and logical/observation time. Validation maps fields into canonical domains while preserving source identifiers and lineage. Cross-department linkage must account for geography versions, schemes, units and time before joining.
 
+Illustrative future mapping, not an additional source used in the assessment:
 
+```json
+{
+  "department": "example_agriculture",
+  "contract_version": "1.0",
+  "source_grain": "district_scheme_period",
+  "geography_system": "verified_lgd",
+  "columns": {
+    "DistrictIdentifier": "district_code",
+    "Programme": "scheme_code",
+    "ReferenceMonth": "observation_period",
+    "AggregateCount": "beneficiary_count"
+  },
+  "required": ["district_code", "scheme_code", "observation_period", "beneficiary_count"],
+  "privacy_classification": "approved_aggregate",
+  "load_key": ["district_code", "scheme_code", "observation_period"],
+  "quality": {"beneficiary_count_min": 0, "unknown_district": "quarantine"}
+}
+```
+
+Spark can broadcast small reference dimensions, prune unused columns early, partition large data by source/period and avoid global windows until aggregation reaches district grain. Measure skew and shuffle rather than assuming more machines solve poor keys. Replace SQLite with a transactional staging/merge target once departmental concurrency or history requires it. Establish source ownership, run lineage and observability across all 23 feeds. Citizen-level matching, if authorized in a separate future project, belongs in a protected identity domain and should expose minimal pseudonymous linkage to analytics.
+
+## L. Deployment roadmap
+
+| Horizon | Deliverables | Exit evidence |
+|---|---|---|
+| Short term: assessment/local pilot | Reproduce pinned environment, review assumptions, demonstrate current pipeline, assign source owners | Tests pass, hashes match, stakeholder understands estimate limitations |
+| Next 2–6 weeks, subject to access | Verified current observations/periods, household definitions, eligible denominators, contract registry, read-only dashboard | Data owner sign-off, reconciled definitions and reviewed metric interpretation |
+| Medium term: 1–3 months | API/file adapters, scheduled orchestration, PostgreSQL staging/merge, monitoring and backups | Recovery drill, SLA evidence, incremental correctness tests |
+| Longer term: phased program | Governed lake/catalog, 23-department contracts, authorized privacy-preserving linkage and independent outcome analysis | Access approval, lineage coverage, security review and measured outcome validation |
+
+These time windows are planning estimates, not delivery commitments. Government access, procurement and data quality can dominate elapsed time. The two-day assessment prioritizes a functional vertical slice first: input contract → one district join → quality gate → SQLite output, followed by failure tests, scoring/ML interpretation and documentation.
+
+## M. Final recommendations
+
+The highest-value next investment is verified current data with documented grain and observation periods. Without that, more complex scoring or machine learning can create confidence without stronger evidence. Keep supplied estimates visibly labelled and retain the no-pension scenario when presenting rankings.
+
+For the assessment, demonstrate the actual Spark code, source-value preservation, complete district matching and rollback/idempotency evidence. Explain why a single SQLite writer is appropriate for the small output, how the transaction boundary works, and what must change at scale. Use the Word report for technical review and the separate learning guide for rehearsal.
+
+For a real UDDP rollout, add source governance and monitoring, then a concurrent database and orchestration, then independent outcomes and responsible predictive analysis. Preserve the engineering principle established here: every published metric must have a traceable source, defined unit, valid grain and explicit interpretation limit.
+
+## Excel Dashboard and District Priority Analytics
+
+A native Excel dashboard after the three CSV outputs. The extension uses openpyxl, preserving the existing Spark transformations, SQLite schema and priority methodology. `src/excel_dashboard.py` validates the actual mart/ML/matching schemas, writes six worksheets, creates formula KPI cards and native charts, and supports standalone generation with no SparkSession. The orchestrator generates its immutable candidate before commit and atomically publishes a latest workbook after commit. Failure/transaction boundaries and recovery are documented in docs/excel_dashboard.md.
+
+High districts are selected from the existing category and sorted using the existing score/rank. No independent thresholds or allocations are added. FormulaRule conditional formatting detects the category column dynamically and colors the entire data row only on the mart and ML sheets. Missing ML categories are derived only in Excel through verified district keys; unmatched keys remain Unknown. District matching is measured at both district and source-record grains with explicit denominators.
+
+The workbook provides category distribution, top-ten ranking, estimated scheme comparisons, population/score comparison, matching status, outreach rates, filters and two-district dropdowns. It is a generated analytical snapshot. openpyxl does not evaluate formulas; Excel recalculates on opening. No slicers, pivot charts or native Excel desktop execution are claimed. Formula/cache and layout verification are recorded with extension-specific evidence rather than inventing Excel test results.
+
+A future Power BI model could use the same validated data for cross-filtering, maps and refresh governance. Maps require verified district boundaries and crosswalks; trends need dated observations. Current counts, allocation provenance and eligible denominators remain the highest-value data improvements before operational scheme monitoring. The extension addresses presentation accessibility, not source uncertainty.

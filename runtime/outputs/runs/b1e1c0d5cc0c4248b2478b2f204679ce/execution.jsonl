@@ -1,0 +1,4 @@
+{"run_id": "b1e1c0d5cc0c4248b2478b2f204679ce", "task": "extract", "timestamp": "2026-11-03T08:07:57.563313+00:00"}
+{"run_id": "b1e1c0d5cc0c4248b2478b2f204679ce", "spark_version": "3.5.6", "task": "spark_transform", "timestamp": "2026-11-03T08:08:01.261946+00:00"}
+{"run_id": "b1e1c0d5cc0c4248b2478b2f204679ce", "task": "gold_validated", "timestamp": "2026-11-03T08:09:00.605613+00:00"}
+{"task": "excel_dashboard_generated", "output": "C:\\Users\\pc\\mini UDDP pipeline\\jharkhand-mini-uddp\\runtime\\outputs\\runs\\b1e1c0d5cc0c4248b2478b2f204679ce\\dashboard\\Jharkhand_UDDP_Interactive_Dashboard.xlsx", "districts": 24, "matched": 24, "issues": []}

@@ -1,0 +1,4 @@
+source_name,raw_rows,out_of_scope,accepted_source_rows,rejected_rows,output_rows
+demographics,640,616,24,0,24
+housing,640,616,24,0,24
+pensions,24,0,24,0,72

@@ -129,7 +129,7 @@ Wait for each command to finish before running the next. A virtual environment i
 
 The development requirements include PySpark 3.5.6, py4j 0.10.9.7, pytest 8.3.5, NumPy 1.26.4, pandas 2.2.3 and PyArrow 17.0.0. pandas and PyArrow support Spark's testing utilities; business transformations use Spark DataFrames and SQL.
 
-SQLite is bundled with Python. No separate database server, JDBC driver, Spark cluster or cloud account is required. `requirements-docs.txt` is only needed to regenerate report diagrams and the interviewer Word document.
+SQLite is bundled with Python. No separate database server, JDBC driver, Spark cluster or cloud account is required. `requirements-docs.txt` is only needed to regenerate report diagrams.
 
 In VS Code, press **Ctrl+Shift+P → Python: Select Interpreter → Enter interpreter path** and select the `.venv311\Scripts\python.exe` in this project. Terminal environment configuration is still required for Java and Spark.
 
@@ -316,7 +316,7 @@ This does not remove files already tracked by Git. Check `git status` before com
 5. Explain pension total reconciliation and Godda's score.
 6. Show automated test evidence, distinguishing the passed Linux suite from the unresolved Windows test run.
 
-Read `ASSUMPTIONS.md` for metric limitations, `docs/schema_documentation.md` for table definitions, `docs/learning_and_demo.md` for interview preparation, and `docs/deployment_guide.md` for scheduling and recovery. The interviewer report is under `reports`.
+Read `ASSUMPTIONS.md` for metric limitations.
 
 For scheduling later, Windows Task Scheduler can invoke the same CLI through a PowerShell wrapper that sets these environment variables and the project working directory. Establish a passing manual run first and allow only one scheduled instance at a time.
 
